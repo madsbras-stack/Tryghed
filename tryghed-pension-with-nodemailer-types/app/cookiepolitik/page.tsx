@@ -1,0 +1,1 @@
+export default function Page(){return (<section className='section'><h1>Cookiepolitik</h1><p className='mt-3'>Pladsholder-tekst. Leveres med jeres konkrete vilkår.</p></section>)}

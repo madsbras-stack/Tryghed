@@ -1,0 +1,9 @@
+@tailwind base; @tailwind components; @tailwind utilities;
+:root{--bg:#f7f9fc;--ink:#0b1736} html,body{height:100%} body{background:var(--bg);color:var(--ink)}
+.container{@apply mx-auto px-4 sm:px-6 lg:px-8} .btn{@apply inline-flex items-center justify-center rounded-md px-5 py-3 text-sm font-semibold transition}
+.btn-primary{@apply bg-brand-600 hover:bg-brand-700 text-white shadow-brand} .btn-ghost{@apply border border-black/10 hover:bg-black/5 text-[color:var(--ink)]}
+.card{@apply rounded-xl bg-white border border-black/10 shadow-sm} .section{@apply container pt-12}
+.badge{@apply inline-flex items-center gap-2 text-xs text-black/70 border border-black/10 rounded-full px-3 py-1 bg-white}
+.nav-link{@apply text-sm text-black/70 hover:text-black} h1{@apply text-4xl md:text-5xl font-extrabold tracking-tight} h2{@apply text-2xl md:text-3xl font-bold}
+p{@apply leading-relaxed text-black/70} small{@apply text-xs text-black/50}
+.sticky-call{position:fixed;bottom:12px;left:12px;right:12px;z-index:60}@media(min-width:768px){.sticky-call{display:none}}
