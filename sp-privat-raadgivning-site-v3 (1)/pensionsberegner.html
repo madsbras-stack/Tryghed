@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pensionsberegner – Søderberg & Partner Privat rådgivning</title>
+  <meta name="description" content="Beregn din pensionsopsparing og se effekten af lavere omkostninger.">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="brand">
+        <img src="./assets/logo-full.png" alt="Søderberg & Partners logo">
+        <div>
+          <strong>Søderberg & Partner Privat rådgivning</strong>
+          <small>Pensionsberegner</small>
+        </div>
+      </div>
+      <nav class="nav">
+        <a href="./index.html">Forside</a>
+        <a href="./pensionsberegner.html" aria-current="page">Pensionsberegner</a>
+        <a href="https://calendly.com/madsbras" target="_blank" rel="noreferrer">Book møde</a>
+      </nav>
+    </header>
+
+    <section class="section">
+      <span class="badge">Værktøj</span>
+      <h1 class="h1">Pensionsberegner</h1>
+      <p class="lead">Forenklet model der viser forskellen på nuværende omkostninger og en optimeret løsning. Resultaterne er vejledende.</p>
+
+      <div class="card">
+        <form id="calcForm">
+          <div class="form-grid">
+            <div>
+              <label for="current">Nuværende opsparing (kr.)</label>
+              <input id="current" type="number" inputmode="decimal" min="0" value="250000">
+              <small class="help">Samlet værdi af dine pensionsordninger i dag.</small>
+            </div>
+            <div>
+              <label for="monthly">Månedlig indbetaling (kr.)</label>
+              <input id="monthly" type="number" inputmode="decimal" min="0" value="3000">
+              <small class="help">Din samlede månedlige indbetaling før skat.</small>
+            </div>
+            <div>
+              <label for="years">År til pension</label>
+              <input id="years" type="number" min="1" value="25">
+              <small class="help">Hvor lang tid er der til udbetaling?</small>
+            </div>
+            <div>
+              <label for="grossReturn">Forventet bruttoafkast p.a. (%)</label>
+              <input id="grossReturn" type="number" step="0.1" value="5.0">
+              <small class="help">Langsigtet gennemsnitligt afkast før omkostninger.</small>
+            </div>
+            <div>
+              <label for="costNow">ÅOK/ÅOP i dag (%)</label>
+              <input id="costNow" type="number" step="0.01" value="1.00">
+              <small class="help">Samlede årlige omkostninger i procent i dine nuværende ordninger.</small>
+            </div>
+            <div>
+              <label for="costNew">ÅOK/ÅOP efter optimering (%)</label>
+              <input id="costNew" type="number" step="0.01" value="0.60">
+              <small class="help">Samlede årlige omkostninger i procent efter vores forslag.</small>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <button type="button" class="btn" id="calcBtn">Beregn</button>
+            <button type="reset" class="btn alt">Nulstil</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="results" id="results" style="display:none">
+        <div class="result-card">
+          <h4>Værdi ved pension – nuværende</h4>
+          <div id="fvNow">–</div>
+        </div>
+        <div class="result-card">
+          <h4>Værdi ved pension – efter optimering</h4>
+          <div id="fvNew">–</div>
+        </div>
+        <div class="result-card">
+          <h4>Mere til dig</h4>
+          <div id="diff">–</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <strong>Sådan regner vi:</strong>
+        <p>Årlig sammensætning. Månedlige indbetalinger omregnes til årlige beløb. Nettoafkast = bruttoafkast minus omkostninger.</p>
+        <small>Denne beregner er forenklet og udgør ikke personlig rådgivning. Skat, risikoprofil, forsikringspriser og markedsudsving kan ændre resultaterne.</small>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>Klar til at optimere?</h3>
+        <p>Book en gratis og uforpligtende gennemgang på Teams – vi gennemgår dine ordninger og konkrete muligheder.</p>
+        <a class="btn" href="https://calendly.com/madsbras" target="_blank" rel="noreferrer">Book gratis gennemgang</a>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">
+        <div>© <span id="y"></span> Søderberg & Partner Privat rådgivning</div>
+        <div>Kontakt: <a href="mailto:info@example.com">info@example.com</a> · <a href="https://calendly.com/madsbras" target="_blank" rel="noreferrer">Book møde</a></div>
+      </div>
+      <script>document.getElementById('y').textContent = new Date().getFullYear()</script>
+    </footer>
+  </div>
+
+  <script>
+  const fmt = new Intl.NumberFormat('da-DK', { maximumFractionDigits: 0 });
+  function toNum(id){ return parseFloat(document.getElementById(id).value.replace(',', '.')) || 0; }
+
+  function futureValueAnnual(principal, monthly, netRate, years){
+    const r = netRate;
+    const P = principal;
+    const C = monthly * 12;
+    const fvP = P * Math.pow(1 + r, years);
+    const fvC = (r === 0) ? C * years : C * ( (Math.pow(1 + r, years) - 1) / r );
+    return fvP + fvC;
+  }
+
+  function calculate(){
+    const current = toNum('current');
+    const monthly = toNum('monthly');
+    const years = Math.max(0, toNum('years'));
+    const g = toNum('grossReturn') / 100;
+    const costNow = toNum('costNow') / 100;
+    const costNew = toNum('costNew') / 100;
+
+    const rn = Math.max(-0.99, g - costNow);
+    const ro = Math.max(-0.99, g - costNew);
+
+    const fvNow = futureValueAnnual(current, monthly, rn, years);
+    const fvNew = futureValueAnnual(current, monthly, ro, years);
+    const diff = fvNew - fvNow;
+
+    document.getElementById('fvNow').textContent = fmt.format(Math.max(0, fvNow)) + " kr.";
+    document.getElementById('fvNew').textContent = fmt.format(Math.max(0, fvNew)) + " kr.";
+    document.getElementById('diff').textContent = fmt.format(Math.max(0, diff)) + " kr.";
+    document.getElementById('results').style.display = 'grid';
+  }
+
+  document.getElementById('calcBtn').addEventListener('click', calculate);
+  </script>
+</body>
+</html>
